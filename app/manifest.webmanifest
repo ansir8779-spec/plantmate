@@ -1,0 +1,10 @@
+{
+  "name": "PlantMate 智能种植",
+  "short_name": "PlantMate",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#eef4ec",
+  "theme_color": "#123f32",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
+
