@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123f32">
+  <meta name="description" content="PlantMate 智能植物种植机控制台">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>PlantMate</title>
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">PLANTMATE · 智能种植</p>
+        <h1>你的植物，<br><span>正在舒适生长。</span></h1>
+      </div>
+      <div class="plant-orb" aria-hidden="true"><span>☘</span></div>
+    </header>
+
+    <section class="connection" aria-live="polite">
+      <div class="status-copy">
+        <span id="statusDot" class="status-dot"></span>
+        <div><strong id="statusText">演示数据运行中</strong><small id="deviceText">尚未连接 PlantMate-ESP32</small></div>
+      </div>
+      <button id="connectButton" class="connect-button">连接设备</button>
+    </section>
+
+    <section class="primary-grid">
+      <article class="metric temperature">
+        <div class="metric-top"><span>温度</span><i>°C</i></div>
+        <strong id="temperature">24.8</strong>
+        <p>适宜区间 20–28°C</p>
+        <div class="sparkline" id="tempChart"></div>
+      </article>
+      <article class="metric humidity">
+        <div class="metric-top"><span>空气湿度</span><i>%</i></div>
+        <strong id="humidity">64</strong>
+        <p>叶片呼吸状态良好</p>
+        <div class="sparkline" id="humidityChart"></div>
+      </article>
+    </section>
+
+    <section class="water-card">
+      <div>
+        <p class="eyebrow">水箱余量</p>
+        <strong><span id="water">76</span>%</strong>
+        <p id="waterHint">预计可维持约 5 天</p>
+      </div>
+      <div class="reservoir" aria-label="水箱余量"><div id="waterFill" class="water-fill"></div><span>💧</span></div>
+    </section>
+
+    <section class="secondary-grid">
+      <article><span class="mini-icon">◉</span><div><small>土壤湿度</small><strong><span id="soil">56</span>%</strong></div></article>
+      <article><span class="mini-icon">☀</span><div><small>环境光照</small><strong><span id="light">680</span> lux</strong></div></article>
+    </section>
+
+    <section class="insight">
+      <div class="insight-icon">✦</div>
+      <div><strong>今日建议</strong><p id="insightText">当前环境稳定，无需额外浇水。保持柔和散射光即可。</p></div>
+    </section>
+
+    <footer><span>数据每 2 秒更新</span><span id="lastUpdated">刚刚</span></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
+
