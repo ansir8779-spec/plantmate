@@ -1,6 +1,6 @@
 const SERVICE_UUID = '7b1e0001-1f3b-4c3d-9a5e-120000000001';
 const TELEMETRY_UUID = '7b1e0002-1f3b-4c3d-9a5e-120000000002';
-const state = { connected: false, temperature: 24.8, humidity: 64, water: 76, soil: 56, light: 680 };
+const state = { connected: false, temperature: 24.8, humidity: 64, water: 76, soil: 56, light: 680, force: 0, uptake: 0, growth: 0, confidence: 0, status: 'DEMO' };
 const history = { temperature: [23.8, 24.1, 23.9, 24.4, 24.3, 24.8], humidity: [60, 61, 63, 62, 65, 64] };
 let demoTimer;
 
@@ -13,12 +13,19 @@ function sparkline(id, values, color) {
 }
 function update(data) {
   Object.assign(state, data);
-  ['temperature', 'humidity', 'water', 'soil', 'light'].forEach(key => {
+  ['temperature', 'humidity', 'water', 'soil', 'light', 'force', 'uptake', 'growth', 'confidence'].forEach(key => {
     if ($(key) && Number.isFinite(Number(state[key]))) $(key).textContent = Math.round(Number(state[key]) * 10) / 10;
   });
   $('waterFill').style.height = `${Math.max(0, Math.min(100, state.water))}%`;
   $('waterHint').textContent = state.water < 20 ? '水量偏低，请尽快补水' : `预计可维持约 ${Math.max(1, Math.round(state.water / 15))} 天`;
-  $('insightText').textContent = state.soil < 35 ? '土壤偏干，建议检查水箱并安排一次浇水。' : state.temperature > 29 ? '温度偏高，建议加强通风并避开直射光。' : '当前环境稳定，无需额外浇水。保持柔和散射光即可。';
+  $('modelStatus').textContent = state.status || '未知';
+  $('insightText').textContent = state.status === 'CALIBRATE' ? '压力系统尚未标定，请依次完成空载、200g 和花盆去皮。'
+    : state.status === 'TARE POT' ? '载荷标定已完成，请放入正式花盆并执行去皮。'
+    : state.status === 'WATERING' ? '检测到载荷快速上升，已标记为一次浇水事件。'
+    : state.status === 'WATER USE' ? `检测到稳定失重，当前耗水趋势约 ${Number(state.uptake).toFixed(1)} g/h。`
+    : state.soil < 35 ? '土壤偏干，建议检查水箱并安排一次浇水。'
+    : state.temperature > 29 ? '温度偏高，建议加强通风并避开直射光。'
+    : '当前载荷与环境稳定，继续积累同条件长期数据。';
   history.temperature.push(Number(state.temperature)); history.temperature.shift();
   history.humidity.push(Number(state.humidity)); history.humidity.shift();
   sparkline('tempChart', history.temperature, '#bd7d30');
@@ -35,7 +42,7 @@ function setConnected(deviceName) {
 }
 async function connect() {
   if (!navigator.bluetooth) {
-    alert('当前浏览器不支持 Web Bluetooth。请使用安卓 Chrome 或 Edge，并通过 HTTPS/localhost 打开。');
+    alert('当前浏览器不支持蓝牙连接。iPhone 请使用 Bluefy 打开本页面，Safari 无法直接连接；安卓可使用 Chrome 或 Edge。');
     return;
   }
   try {
@@ -66,7 +73,12 @@ function startDemo() {
       humidity: 62 + Math.sin(now / 11 + 1) * 4,
       water: Math.max(18, state.water - .03),
       soil: 54 + Math.sin(now / 15 + 2) * 5,
-      light: 650 + Math.sin(now / 7) * 90
+      light: 650 + Math.sin(now / 7) * 90,
+      force: 735 + Math.sin(now / 50) * 2,
+      uptake: 1.8 + Math.sin(now / 20) * .4,
+      growth: 52,
+      confidence: 78,
+      status: 'STABLE'
     });
   }, 2000);
 }
@@ -74,4 +86,3 @@ $('connectButton').addEventListener('click', connect);
 if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js');
 update(state);
 startDemo();
-
